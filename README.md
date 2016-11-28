@@ -4,6 +4,12 @@ Comprehensive Tensorflow Package for various CNN variants, RNN variants, visuali
 Flow starts from main.py. One needs to just set the configuration parameters, and leave the rest to the package. Specifically, we aim to support the following:
 
 ----------------------------
+Annotations
+----------------------------
+(0) Single Label / Class Scenario <br/>
+(1) Multi Label / Class Scenario 
+
+----------------------------
 CNN Architectures
 ----------------------------
 (0) AlexNet <br />
