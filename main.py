@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# Train various CNN Architectures in TensorFlow (using TFlearn)
+# Generic TensorFlow Package (using TFlearn) (All in One)
 # Author : Sukrit Shankar
 # ----------------------------------------------------------------------
 
