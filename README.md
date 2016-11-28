@@ -13,7 +13,7 @@ Annotations
 CNN Architectures
 ----------------------------
 (0) AlexNet <br />
-(1) GoogleNet (Inception-v4) <br />
+(1) GoogleNet (Inception-v3) <br />
 (2) VGG-11, VGG-16, VGG-19 <br />
 (3) ResNet (configurable) <br />
 (4) Wide ResNet (configurable) <br />
