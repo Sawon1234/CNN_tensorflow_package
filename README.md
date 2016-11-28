@@ -74,7 +74,7 @@ INSTALLATION
 (2) Install TFLearn simply using "pip install tflearn". This requires for a Tensorflow version >= 0.9.0, which will be automatically satisfied with (1) above. 
 
 ------------------------------
-NOTES ON RUNNING WITh TFLEARN 
+NOTES ON RUNNING WITH TFLEARN 
 ------------------------------
 (1) For some reason, TFLearn occupies maximum amount of GPU memory available, even when it needs less. We are still debugging into its causes, and potential fallacies in TFLearn. 
 
