@@ -1,21 +1,17 @@
 # ECC_tensorflow_package
-Comprehensive Tensorflow Package for various CNN variants, RNN variants, visualization and advanced losses. Flow starts from main.py. One needs to just set the configurations parameters, and leave rest to the package. Specifically, we aim to support the following:
+Comprehensive Tensorflow Package for various CNN variants, RNN variants, visualization and advanced losses. 
+
+Flow starts from main.py. One needs to just set the configuration parameters, and leave the rest to the package. Specifically, we aim to support the following:
 
 ----------------------------
 CNN Architectures
 ----------------------------
-(0) AlexNet
-
-(1) GoogleNet (Inception-v4)
-
-(2) VGG-11, VGG-16, VGG-19
-
-(3) ResNet (configurable)
-
-(4) Wide ResNet (configurable)
-
+(0) AlexNet <br />
+(1) GoogleNet (Inception-v4) <br />
+(2) VGG-11, VGG-16, VGG-19 <br />
+(3) ResNet (configurable) <br />
+(4) Wide ResNet (configurable) <br />
 (5) Dense Net (configurable)
-
 (6) Highway Convolutional Networks (configurable)
 
 
@@ -23,70 +19,45 @@ CNN Architectures
 Loss Objectives  
 ----------------------------
 (0) L1 / L2 regularization (supported for all losses below)
-
 (1) Softmax (Single label classification / implicit ranking of labels for a given data instance)
-
 (2) Cross Entropy (Multi label classification / implicit ranking of data instances for a given label)
-
 (3) Magnetic Loss (Metric Learning with Adaptive Density Discrimination)
-
 (4) Triplet Loss  
-
 (5) Contrastive Loss (for Siamese networks)
-
 (6) Pairwise Ranking Loss 
-
 (7) Euclidean Loss 
-
 (8) Hinge Loss 
 
 ---------------------
 Visualization  
 ---------------------
 (0) Net Architecture 
-
 (1) Saliency Map (with Global Max Pool) 
-
 (2) Average Spatial Response of a layer for an image 
-
 (3) Correlation matrices for all classes at a given layer (class mean of average spatial responses)
-
 (4) Spatial Responses at various layers for a given image
-
 (5) Input reconstruction from certain layers of a pretrained net 
 
 ---------------------------
 Transfer Learning
 ---------------------------
 (1) Finetuning last layer for a new dataset 
-
 (2) Finetuning multiple new layers at the end 
-
 (3) Finetuning multiple layers choosing from anywhere in the pretrained net 
 
 ------------------------------------------------
 Time Series Modelling (Recurrent Architectures)   
 ------------------------------------------------
 (0) Testing and Visualization
-
 (1) RNNs
-
 (2) LSTMs
-
 (3) GRUs
-
 (4) Bidirectional RNNs
-
 (5) RNN Pixels
-
 (6) Spatial LSTM 
-
 (7) Spatial LSTM + RNN over the hidden states 
-
 (8) Spatial LSTM + Soft Attention over the input features 
-
 (9) Spatial LSTM + Input features from CNN(s)
-
 (10) Static Graph Spatial LSTM 
 
 -------------
