@@ -178,11 +178,29 @@ def load_googlenet_v3(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_proba
 
 
 
-def conv_2d_bn(incoming,nb_filter, filter_size, strides=1, padding='same', activation='linear', bias=True, weights_init='uniform_scaling', bias_init='zeros', regularizer=None, weight_decay=0.001, trainable=True, restore=True, reuse=False, scope=None, name='Conv2D_BN'):
-	conv_bn = conv_2d(incoming, nb_filter, filter_size, strides=strides, name=name)
-	conv_bn = batch_normalization(conv_bn)
-	conv_bn = activation(bnlayer)
-	return conv_bn
+def conv_2d_bn(incoming,nb_filter, filter_size, strides=1, padding='same', activation=None, bias=True, weights_init='uniform_scaling', bias_init='zeros', regularizer=None, weight_decay=0.001, trainable=True, restore=True, reuse=False, scope=None, name='Conv2D_BN'):
+	return relu(batch_normalization(conv_2d(incoming, 
+		nb_filter, 
+		filter_size, 
+		strides=strides, 
+		activation=activation,
+		padding=padding,
+		bias=bias,
+		weights_init=weights_init,
+		regularizer=regularizer,
+		name=name))
+	)
+	# conv_bn = conv_2d(incoming, 
+	# 	nb_filter, 
+	# 	filter_size, 
+	# 	strides=strides, 
+	# 	name=name)
+	# conv_bn = tflearn.batch_normalization(conv_bn)
+	# conv_bn = tflearn.activation(conv_bn, 'relu')
+	# # import pdb; pdb.set_trace();
+	# # conv_bn = batch_normalization(conv_bn)
+	# # conv_bn = activation(conv_bn,'relu')
+	# return conv_bn
 
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
@@ -198,7 +216,7 @@ def load_googlenet_bn(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_proba
 	# pool1_3_3 = local_response_normalization(pool1_3_3)
 	conv2_3_3_reduce = conv_2d_bn(pool1_3_3, 64,1, activation='relu',name = 'conv2_3_3_reduce')
 	conv2_3_3 = conv_2d_bn(conv2_3_3_reduce, 192,3, activation='relu', name='conv2_3_3')
-	conv2_3_3 = local_response_normalization(conv2_3_3)
+	# conv2_3_3 = local_response_normalization(conv2_3_3)
 	pool2_3_3 = max_pool_2d(conv2_3_3, kernel_size=3, strides=2, name='pool2_3_3_s2')
 
 	# Inception Module 3a

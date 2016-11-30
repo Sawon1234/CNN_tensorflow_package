@@ -236,12 +236,14 @@ if (comm_loss_type == 0):
 if (comm_loss_type == 1):
 	loss_string = 'categorical_crossentropy'
 
-network = regression(net, optimizer=momentum,
+network = regression(net, 
+					 optimizer=momentum,
                      loss=loss_string,
                      learning_rate=cnn_initial_learning_rate)                     
                 
 # Set the network      
-model = tflearn.DNN(network, checkpoint_path=cnn_checkpoint_path_string,
+model = tflearn.DNN(network, 
+					checkpoint_path=cnn_checkpoint_path_string,
                     max_checkpoints=1, tensorboard_verbose=2)
 
 # Train the network  
