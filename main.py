@@ -20,7 +20,7 @@ from tflearn.layers.normalization import local_response_normalization
 from tflearn.layers.merge_ops import merge
 from tflearn.layers.estimator import regression
 from tflearn.data_utils import *
-from tflearn.optimizers import Momentum
+from tflearn.optimizers import *
 
 import shankar_load_data as  ssld
 import shankar_load_cnn_arch as sslca
@@ -36,8 +36,20 @@ import shankar_load_cnn_arch as sslca
 cnn_image_shape_before_crop = [256,256,3]   # Shape before cropping
 cnn_image_shape = [224, 224, 3] # Shape after cropping 
 
+# Optimization Method 
+# 0 = SGD
+# 1 = RMSProp
+# 2 = Adam 
+# 3 = Momentum 
+# 4 = AdaGrad 
+# Best to choose 2 if you are trying a net with batch normalization 
+cnn_opt_method = 2
+
+# Beta Factor for ADAM Optimizer 
+cnn_adam_param_beta1 = 0.99
+
 # Initial Learning Rate - Lower down incase loss keeps increasing (diverging trend)
-cnn_initial_learning_rate = 0.1
+cnn_initial_learning_rate = 0.001
 
 # Decay Step Iteration
 cnn_decay_step_size = 100
@@ -97,15 +109,16 @@ cnn_std_vector_precomputed = [0.23995902,  0.25372425,  0.25706375] # Used when 
 # -------------- Set Parameters for Architecture Choice  ------
 # CNN Architecture Choices 
 # 0 = AlexNet
-# 1 = GoogleNet (Inception-v3)
-# 2 = VGG-11
-# 3 = VGG-16 
-# 4 = VGG-19
-# 5 = ResNet (configurable)
-# 6 = Wide ResNet (configurable)
-# 7 = Dense Net (configurable)
-# 8 = Highway Convolutional Networks (configurable)
-cnn_arch_choice = 8
+# 1 = GoogleNet (Inception-v1)
+# 2 = GoogleNet (Inception-v1 Batch Normalization)
+# 3 = VGG-11
+# 4 = VGG-16 
+# 5 = VGG-19
+# 6 = ResNet (configurable)
+# 7 = Wide ResNet (configurable)
+# 8 = Dense Net (configurable)
+# 9 = Highway Convolutional Networks (configurable)
+cnn_arch_choice = 2
 cnn_resNet_n = 3 # Only for ResNet (n = 5 => 32 layer network, n = 9 => 56 layers and so on) 
 cnn_wideResNet_n = 3 # Number of Blocks for Wide ResNet 
 cnn_wideResNet_k = 1 # Widening Ratio for Wide ResNet 
@@ -206,20 +219,22 @@ if (comm_loss_type == 1):
 if (cnn_arch_choice == 0):
 	net = sslca.load_alexnet(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation) 
 if (cnn_arch_choice == 1):
-	net = sslca.load_googlenet_v3(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation) 
+	net = sslca.load_googlenet_v1(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation) 
 if (cnn_arch_choice == 2):
-	net = sslca.load_vgg_11(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation) 
+	net = sslca.load_googlenet_bn(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation) 
 if (cnn_arch_choice == 3):
-	net = sslca.load_vgg_16(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation)
+	net = sslca.load_vgg_11(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation) 
 if (cnn_arch_choice == 4):
-	net = sslca.load_vgg_19(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation)
+	net = sslca.load_vgg_16(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation)
 if (cnn_arch_choice == 5):
-	net = sslca.load_resnet(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation, cnn_resNet_n)
+	net = sslca.load_vgg_19(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation)
 if (cnn_arch_choice == 6):
-	net = sslca.load_wide_resnet(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation, cnn_wideResNet_n, cnn_wideResNet_k)
+	net = sslca.load_resnet(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation, cnn_resNet_n)
 if (cnn_arch_choice == 7):
-	net = sslca.load_densenet(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation, cnn_denseNet_depth, cnn_denseNet_growth_ratio)
+	net = sslca.load_wide_resnet(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation, cnn_wideResNet_n, cnn_wideResNet_k)
 if (cnn_arch_choice == 8):
+	net = sslca.load_densenet(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation, cnn_denseNet_depth, cnn_denseNet_growth_ratio)
+if (cnn_arch_choice == 9):
 	net = sslca.load_highway(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation, cnn_highway_block_depth)
 
 
@@ -228,7 +243,10 @@ if (cnn_arch_choice == 8):
 ####################################################################################################################
 
 # Fill the training params 
-momentum = Momentum(learning_rate=cnn_initial_learning_rate, lr_decay=cnn_decay_mult_factor, decay_step=cnn_decay_step_size)
+if (cnn_opt_method == 3):
+	optimization_method = Momentum(learning_rate=cnn_initial_learning_rate, lr_decay=cnn_decay_mult_factor, decay_step=cnn_decay_step_size)
+if (cnn_opt_method == 2):
+	optimization_method = Adam(learning_rate=cnn_initial_learning_rate, beta1=cnn_adam_param_beta1)
 
 # Set the loss 
 if (comm_loss_type == 0):
@@ -236,7 +254,7 @@ if (comm_loss_type == 0):
 if (comm_loss_type == 1):
 	loss_string = 'categorical_crossentropy'
 
-network = regression(net, optimizer=momentum,
+network = regression(net, optimizer=optimization_method,
                      loss=loss_string,
                      learning_rate=cnn_initial_learning_rate)                     
                 
