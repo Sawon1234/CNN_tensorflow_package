@@ -1,7 +1,7 @@
-# ECC_tensorflow_package
-Comprehensive Tensorflow Package for various CNN variants, RNN variants, visualization and advanced losses. 
+# CNN_tensorflow_package
+Tensorflow Package for various CNN variants. 
 
-Flow starts from main.py. One needs to just set the configuration parameters, and leave the rest to the package. Specifically, we aim to support the following:
+Flow starts from main.py. One needs to just set the configuration parameters, and leave the rest to the package. Specifically, following are supported, and we will be constantly updaitng this space with more variants:
 
 ----------------------------
 Annotations
@@ -27,44 +27,6 @@ Loss Objectives
 (0) L1 / L2 regularization (supported for all losses below)<br />
 (1) Softmax (Single label classification / implicit ranking of labels for a given data instance)<br />
 (2) Cross Entropy (Multi label classification / implicit ranking of data instances for a given label)<br />
-(3) Magnetic Loss (Metric Learning with Adaptive Density Discrimination)<br />
-(4) Triplet Loss  <br />
-(5) Contrastive Loss (for Siamese networks)<br />
-(6) Pairwise Ranking Loss <br />
-(7) Euclidean Loss <br />
-(8) Hinge Loss <br />
-
----------------------
-Visualization  
----------------------
-(0) Net Architecture <br />
-(1) Saliency Map (with Global Max Pool) <br />
-(2) Average Spatial Response of a layer for an image <br />
-(3) Correlation matrices for all classes at a given layer (class mean of average spatial responses)<br />
-(4) Spatial Responses at various layers for a given image<br />
-(5) Input reconstruction from certain layers of a pretrained net <br />
-
----------------------------
-Transfer Learning
----------------------------
-(1) Finetuning last layer for a new dataset <br />
-(2) Finetuning multiple new layers at the end <br />
-(3) Finetuning multiple layers choosing from anywhere in the pretrained net <br />
-
-------------------------------------------------
-Time Series Modelling (Recurrent Architectures)   
-------------------------------------------------
-(0) Testing and Visualization<br />
-(1) RNNs<br />
-(2) LSTMs<br />
-(3) GRUs<br />
-(4) Bidirectional RNNs<br />
-(5) RNN Pixels<br />
-(6) Spatial LSTM <br />
-(7) Spatial LSTM + RNN over the hidden states <br />
-(8) Spatial LSTM + Soft Attention over the input features <br />
-(9) Spatial LSTM + Input features from CNN(s)<br />
-(10) Static Graph Spatial LSTM <br />
 
 -------------
 INSTALLATION
@@ -76,6 +38,6 @@ INSTALLATION
 ------------------------------
 NOTES ON RUNNING WITH TFLEARN 
 ------------------------------
-(1) For some reason, TFLearn occupies maximum amount of GPU memory available, even when it needs less. We are still debugging into its causes, and potential fallacies in TFLearn. 
+(1) For some reason, TFLearn occupies maximum amount of GPU memory available, even when it needs less. We are still debugging into its causes, and potential fallacies in TFLearn. Latest versions of TFLearn are beginning to fix this issue however. 
 
 (2) In case one needs to stop the execution in between, use Ctrl-C and not Ctrl-Z. The former clears up all memory occupied in the GPU, while the latter does not. In case memory is held up, use nvidia-smi to list the process Ids and note the one consuming the undesired memory, and then kill that process Id by using kill -9 <pid>.
