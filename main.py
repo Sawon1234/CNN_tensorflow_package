@@ -149,35 +149,7 @@ mlp_choice = 1 # 0 = no MLP
 # -------------- Set Parameters for Loss Types  ---------------
 # 0 = Softmax (Single label classification / implicit ranking of labels for a given data instance)
 # 1 = Sigmoid Cross Entropy (Multi label classification / implicit ranking of data instances for a given label)
-# 2 = Magnetic Loss (Metric Learning with Adaptive Density Discrimination)
-# 3 = Triplet Loss  
-# 4 = Contrastive Loss (for Siamese networks)
-# 5 = Pairwise Ranking Loss 
-# 6 = Euclidean Loss 
-# 7 = Hinge Loss 
 comm_loss_type = 0
-
-# -------------------------------------------------------------
-# -------------- Set Parameters for CNN Transfer Learning -----
-cnn_transfer_learn = 1  # 0 = Means no transfer learn 
-cnn_base_model_path = ''
-
-# -------------------------------------------------------------
-# -------------- Set Parameters for Testing & Visualization ----
-# CNN Visualization
-# 0 = Saliency Map (with Global Max Pool) 
-# 1 = Average Spatial Response of a layer for an image 
-# 2 = Correlation matrices for all classes at a given layer (class mean of average spatial responses)
-# 3 = Spatial Responses at various layers for a given image
-# 4 = Input reconstruction from certain layers of a trained net 
-cnn_test = 0 # 1 = Test by dumping output probabilities for a test set 
-cnn_vis = 0  # 1 = Visualize
-cnn_vis_pretrained_net_path = ''
-
-# RNN Visualization & Test 
-rnn_test = 0 # 1 = Test 
-rnn_vis = 0 # 1 = Visualize 
-rnn_vis_pretrained_net_path = '' 
 
 ####################################################################################################################
 # Data loading and preprocessing
@@ -266,11 +238,6 @@ model = tflearn.DNN(network, checkpoint_path=cnn_checkpoint_path_string,
 model.fit(XTrain, YTrain, n_epoch=cnn_max_num_epochs, validation_set=(XVal, YVal), shuffle=True,
           show_metric=True, batch_size=cnn_batch_size,
           snapshot_epoch=True, run_id=cnn_run_id_string)
-
-
-####################################################################################################################
-# Test and Visualize 
-####################################################################################################################
 
 
 
