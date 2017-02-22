@@ -34,7 +34,7 @@ import shankar_load_cnn_arch as sslca
 # -------------- Set Parameters for Running ---------------------
 # Image Shape - Constant here - Prefers to be 3D 
 cnn_image_shape_before_crop = [256,256,3]   # Shape before cropping
-cnn_image_shape = [224, 224, 3] # Shape after cropping 
+cnn_image_shape = [256, 256, 3] # Shape after cropping 
 
 # Optimization Method 
 # 0 = SGD
@@ -76,8 +76,8 @@ cnn_max_num_epochs = 40
 cnn_top_k_value = 1
 
 # Strings with which the run will be identified
-cnn_run_id_string = 'camtail'
-cnn_checkpoint_path_string = 'model_googlenet' 
+cnn_run_id_string = 'aesthetics_all'
+cnn_checkpoint_path_string = 'model_googlenet_inception_v2' 
 
 # -------------------------------------------------------------
 # -----------------Set Parameters for Data Loading ------------
@@ -88,9 +88,9 @@ comm_multi_label_scenario = 0 # 0 = Single label
 # For Single Label, the file format should be as follows:
 # --- Each row contains information about one data instance, <relative_image_path_with_extension> <label>
 # Root image path is prefixed to the image paths in the train and val txt files 
-comm_train_text_file_SL = 'datasets/fashion_categories_camtail/train.txt'
-comm_val_text_file_SL = 'datasets/fashion_categories_camtail/val.txt'
-comm_root_image_path_SL = '/home/sukrit/Desktop/DEEP_LEARNING/CODES_OURS/tf_package_ver_1/datasets/fashion_categories_camtail/images_resized_nochange_ar/'
+comm_train_text_file_SL = 'datasets/aesthetics_cambridge/train.txt'
+comm_val_text_file_SL = 'datasets/aesthetics_cambridge/val.txt'
+comm_root_image_path_SL = 'datasets/aesthetics_cambridge/images_resized_change_ar/'
 
 # For Multiple Labels, the file format should be as follows:
 # --- Each row contains information about one data instance, <relative_image_path_with_extension> <label/value>  <label/value> ... 
@@ -101,9 +101,9 @@ comm_root_image_path_ML = '/home/sukrit/Desktop/DEEP_LEARNING/CODES_OURS/tf_pack
 
 # -------------------------------------------------------------
 # -------------- Set Parameters for Data Preprocessing  -------
-cnn_compute_mean_std = 0 # 1 = Yes, 0 = No 
-cnn_mean_vector_precomputed = [0.70786846,  0.67048967,  0.65235734] # Used when cnn_compute_mean_std = 0
-cnn_std_vector_precomputed = [0.23995902,  0.25372425,  0.25706375] # Used when cnn_compute_mean_std = 0
+cnn_compute_mean_std = 0 # 1 = Yes, 0 = No [Mean = 0.408419472446, STD = 0.224919342238]
+cnn_mean_vector_precomputed = [0.408419472446,  0.408419472446,  0.408419472446] # Used when cnn_compute_mean_std = 0
+cnn_std_vector_precomputed = [0.224919342238,  0.224919342238,  0.224919342238] # Used when cnn_compute_mean_std = 0
 
 # -------------------------------------------------------------
 # -------------- Set Parameters for Architecture Choice  ------
@@ -118,6 +118,7 @@ cnn_std_vector_precomputed = [0.23995902,  0.25372425,  0.25706375] # Used when 
 # 7 = Wide ResNet (configurable)
 # 8 = Dense Net (configurable)
 # 9 = Highway Convolutional Networks (configurable)
+# 10 = Inception Resnet v4 
 cnn_arch_choice = 2
 cnn_resNet_n = 3 # Only for ResNet (n = 5 => 32 layer network, n = 9 => 56 layers and so on) 
 cnn_wideResNet_n = 3 # Number of Blocks for Wide ResNet 
@@ -149,7 +150,35 @@ mlp_choice = 1 # 0 = no MLP
 # -------------- Set Parameters for Loss Types  ---------------
 # 0 = Softmax (Single label classification / implicit ranking of labels for a given data instance)
 # 1 = Sigmoid Cross Entropy (Multi label classification / implicit ranking of data instances for a given label)
+# 2 = Magnetic Loss (Metric Learning with Adaptive Density Discrimination)
+# 3 = Triplet Loss  
+# 4 = Contrastive Loss (for Siamese networks)
+# 5 = Pairwise Ranking Loss 
+# 6 = Euclidean Loss 
+# 7 = Hinge Loss 
 comm_loss_type = 0
+
+# -------------------------------------------------------------
+# -------------- Set Parameters for CNN Transfer Learning -----
+cnn_transfer_learn = 1  # 0 = Means no transfer learn 
+cnn_base_model_path = ''
+
+# -------------------------------------------------------------
+# -------------- Set Parameters for Testing & Visualization ----
+# CNN Visualization
+# 0 = Saliency Map (with Global Max Pool) 
+# 1 = Average Spatial Response of a layer for an image 
+# 2 = Correlation matrices for all classes at a given layer (class mean of average spatial responses)
+# 3 = Spatial Responses at various layers for a given image
+# 4 = Input reconstruction from certain layers of a trained net 
+cnn_test = 0 # 1 = Test by dumping output probabilities for a test set 
+cnn_vis = 0  # 1 = Visualize
+cnn_vis_pretrained_net_path = ''
+
+# RNN Visualization & Test 
+rnn_test = 0 # 1 = Test 
+rnn_vis = 0 # 1 = Visualize 
+rnn_vis_pretrained_net_path = '' 
 
 ####################################################################################################################
 # Data loading and preprocessing
@@ -208,6 +237,8 @@ if (cnn_arch_choice == 8):
 	net = sslca.load_densenet(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation, cnn_denseNet_depth, cnn_denseNet_growth_ratio)
 if (cnn_arch_choice == 9):
 	net = sslca.load_highway(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation, cnn_highway_block_depth)
+if (cnn_arch_choice == 10):
+	net = sslca.load_inception_resnet_v4(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation)
 
 
 ####################################################################################################################
@@ -238,6 +269,11 @@ model = tflearn.DNN(network, checkpoint_path=cnn_checkpoint_path_string,
 model.fit(XTrain, YTrain, n_epoch=cnn_max_num_epochs, validation_set=(XVal, YVal), shuffle=True,
           show_metric=True, batch_size=cnn_batch_size,
           snapshot_epoch=True, run_id=cnn_run_id_string)
+
+
+####################################################################################################################
+# Test and Visualize 
+####################################################################################################################
 
 
 

@@ -16,6 +16,7 @@ import tensorflow as tf
 from math import ceil
 
 import tflearn
+import tflearn.activations as activations 
 from tflearn.data_preprocessing import ImagePreprocessing
 from tflearn.layers.core import input_data, dropout, fully_connected, flatten
 from tflearn.layers.conv import conv_2d, max_pool_2d, avg_pool_2d, highway_conv_2d
@@ -25,6 +26,7 @@ from tflearn.layers.estimator import regression
 from tflearn.data_utils import *
 from tflearn.optimizers import Momentum
 from tflearn.layers.normalization import batch_normalization
+from tflearn.activations import relu
 
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
@@ -330,6 +332,402 @@ def load_googlenet_bn(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_proba
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
+# Function For GoogleNet Inception V3
+def load_googlenet_v3(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation):
+	# Input Layer 
+	input_layer = input_data(shape=[None, cnn_image_shape[0], cnn_image_shape[1], cnn_image_shape[2]], data_preprocessing = cnn_img_prep, data_augmentation = cnn_img_aug)
+
+	# Basic Conv Layers
+	network = conv_2d(input_layer, 32, 3, strides=2)
+	network = batch_normalization(network)
+  	network = tflearn.activation(network, 'relu')
+	network = conv_2d(network, 32, 3)
+	network = batch_normalization(network)
+  	network = tflearn.activation(network, 'relu')
+	network = conv_2d(network, 64, 3)
+	network = batch_normalization(network)
+  	network = tflearn.activation(network, 'relu')
+	network = max_pool_2d(network,3,strides=2)
+	network = conv_2d(network, 80, 1)
+	network = batch_normalization(network)
+  	network = tflearn.activation(network, 'relu')
+	network = conv_2d(network, 192, 3)
+	network = batch_normalization(network)
+  	network = tflearn.activation(network, 'relu')
+	network = max_pool_2d(network,3,strides=2)
+	
+	# Inception Wide Module 1
+	network_1 = conv_2d(network, 64, 1)
+	network_1 = batch_normalization(network_1)
+  	network_1 = tflearn.activation(network_1, 'relu')
+
+	network_2 = conv_2d(network, 48, 1)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 64, 5)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+
+	network_3 = conv_2d(network, 64, 1)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 96, 3)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 96, 3)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+
+	network_4 = avg_pool_2d(network, kernel_size=3, strides=1)
+	network_4 = conv_2d(network_4, 32, 1)
+	network_4 = batch_normalization(network_4)
+  	network_4 = tflearn.activation(network_4, 'relu')
+	network = merge([network_1, network_2, network_3, network_4], axis=3, mode='concat')
+	del network_1, network_2, network_3, network_4
+
+	# Inception Wide Module 2 
+	network_1 = conv_2d(network, 64, 1)
+	network_1 = batch_normalization(network_1)
+  	network_1 = tflearn.activation(network_1, 'relu')
+
+	network_2 = conv_2d(network, 48, 1)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 64, 5)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+
+	network_3 = conv_2d(network, 64, 1)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 96, 3)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 96, 3)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+
+	network_4 = avg_pool_2d(network, kernel_size=3, strides=1)
+	network_4 = conv_2d(network_4, 64, 1)
+	network_4 = batch_normalization(network_4)
+  	network_4 = tflearn.activation(network_4, 'relu')
+	network = merge([network_1, network_2, network_3, network_4], axis=3, mode='concat')
+	del network_1, network_2, network_3, network_4
+	
+	# Inception Wide Module 3 
+	network_1 = conv_2d(network, 64, 1)
+	network_1 = batch_normalization(network_1)
+  	network_1 = tflearn.activation(network_1, 'relu')
+
+	network_2 = conv_2d(network, 48, 1)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 64, 5)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+
+	network_3 = conv_2d(network, 64, 1)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 96, 3)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 96, 3)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+
+	network_4 = avg_pool_2d(network, kernel_size=3, strides=1)
+	network_4 = conv_2d(network_4, 64, 1)
+	network_4 = batch_normalization(network_4)
+  	network_4 = tflearn.activation(network_4, 'relu')
+	network = merge([network_1, network_2, network_3, network_4], axis=3, mode='concat')
+	del network_1, network_2, network_3, network_4
+	
+	# Inception Long Module 1
+	network_1 = conv_2d(network, 384, 3, strides=2)
+	network_1 = batch_normalization(network_1)
+	network_1 = tflearn.activation(network_1, 'relu')
+
+	network_2 = conv_2d(network, 64, 1)
+	network_2 = batch_normalization(network_2)
+	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 96, 3)
+	network_2 = batch_normalization(network_2)
+	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 96, 3, strides=2)
+	network_2 = batch_normalization(network_2)
+	network_2 = tflearn.activation(network_2, 'relu')
+
+	network_3 = max_pool_2d(network,3,strides=2)
+	network = merge([network_1, network_2, network_3], axis=3, mode='concat')
+	del network_1, network_2, network_3
+
+	# Inception Wide Long Module 1
+	network_1 = conv_2d(network, 192, 1)
+	network_1 = batch_normalization(network_1)
+  	network_1 = tflearn.activation(network_1, 'relu')
+
+	network_2 = conv_2d(network, 128, 1)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 128, [1,7])
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 192, [7,1])
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+
+	network_3 = conv_2d(network, 128, 1)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 128, [7,1])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 128, [1,7])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 128, [7,1])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 192, [1,7])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+
+	network_4 = avg_pool_2d(network, kernel_size=3, strides=1)
+	network_4 = conv_2d(network_4, 192, 1)
+	network_4 = batch_normalization(network_4)
+  	network_4 = tflearn.activation(network_4, 'relu')
+	network = merge([network_1, network_2, network_3, network_4], axis=3, mode='concat')
+	del network_1, network_2, network_3, network_4
+
+	# Inception Wide Long Module 2
+	network_1 = conv_2d(network, 192, 1)
+	network_1 = batch_normalization(network_1)
+  	network_1 = tflearn.activation(network_1, 'relu')
+
+	network_2 = conv_2d(network, 160, 1)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 160, [1,7])
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 192, [7,1])
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+
+	network_3 = conv_2d(network, 160, 1)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 160, [7,1])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 160, [1,7])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 160, [7,1])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 192, [1,7])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+
+	network_4 = avg_pool_2d(network, kernel_size=3, strides=1)
+	network_4 = conv_2d(network_4, 192, 1)
+	network_4 = batch_normalization(network_4)
+  	network_4 = tflearn.activation(network_4, 'relu')
+	network = merge([network_1, network_2, network_3, network_4], axis=3, mode='concat')
+	del network_1, network_2, network_3, network_4
+
+	# Inception Wide Long Module 3
+	network_1 = conv_2d(network, 192, 1)
+	network_1 = batch_normalization(network_1)
+  	network_1 = tflearn.activation(network_1, 'relu')
+
+	network_2 = conv_2d(network, 160, 1)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 160, [1,7])
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 192, [7,1])
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+
+	network_3 = conv_2d(network, 160, 1)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 160, [7,1])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 160, [1,7])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 160, [7,1])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 192, [1,7])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+
+	network_4 = avg_pool_2d(network, kernel_size=3, strides=1)
+	network_4 = conv_2d(network_4, 192, 1)
+	network_4 = batch_normalization(network_4)
+  	network_4 = tflearn.activation(network_4, 'relu')
+	network = merge([network_1, network_2, network_3, network_4], axis=3, mode='concat')
+	del network_1, network_2, network_3, network_4
+
+	# Inception Wide Long Module 4
+	network_1 = conv_2d(network, 192, 1)
+	network_1 = batch_normalization(network_1)
+  	network_1 = tflearn.activation(network_1, 'relu')
+
+	network_2 = conv_2d(network, 192, 1)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 192, [1,7])
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 192, [7,1])
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+
+	network_3 = conv_2d(network, 192, 1)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 192, [7,1])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 192, [1,7])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 192, [7,1])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network_3, 192, [1,7])
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+
+	network_4 = avg_pool_2d(network, kernel_size=3, strides=1)
+	network_4 = conv_2d(network_4, 192, 1)
+	network_4 = batch_normalization(network_4)
+  	network_4 = tflearn.activation(network_4, 'relu')
+	network = merge([network_1, network_2, network_3, network_4], axis=3, mode='concat')
+	del network_1, network_2, network_3, network_4
+
+	# Inception Long Module
+	network_1 = conv_2d(network, 192, 1)
+	network_1 = batch_normalization(network_1)
+  	network_1 = tflearn.activation(network_1, 'relu')
+	network_1 = conv_2d(network_1, 320, 3,strides=2)
+	network_1 = batch_normalization(network_1)
+  	network_1 = tflearn.activation(network_1, 'relu')
+
+	network_2 = conv_2d(network, 192, 1)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 192, [1,7])
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 192, [7,1])
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2 = conv_2d(network_2, 192, 3, strides=2)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+
+	network_3 = max_pool_2d(network,3,strides=2)
+	network = merge([network_1, network_2, network_3], axis=3, mode='concat')
+	del network_1, network_2, network_3
+
+	# Inception Branch Module 1 
+	network_1 = conv_2d(network, 320, 1)
+	network_1 = batch_normalization(network_1)
+  	network_1 = tflearn.activation(network_1, 'relu')
+
+	network_2 = conv_2d(network, 384, 1)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2_1 = conv_2d(network_2, 384, [1,3])
+	network_2_1 = batch_normalization(network_2_1)
+  	network_2_1 = tflearn.activation(network_2_1, 'relu')
+	network_2_2 = conv_2d(network_2, 384, [3,1])
+	network_2_2 = batch_normalization(network_2_2)
+  	network_2_2 = tflearn.activation(network_2_2, 'relu')
+
+	network_3 = conv_2d(network, 448, 1)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network, 384, 3)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3_1 = conv_2d(network_3, 384, [1,3])
+	network_3_1 = batch_normalization(network_3_1)
+  	network_3_1 = tflearn.activation(network_3_1, 'relu')
+	network_3_2 = conv_2d(network_3, 384, [3,1])
+	network_3_2 = batch_normalization(network_3_2)
+  	network_3_2 = tflearn.activation(network_3_2, 'relu')
+
+	network_4 = avg_pool_2d(network, kernel_size=3, strides=1)
+	network_4 = conv_2d(network_4, 192, 1)
+	network_4 = batch_normalization(network_4)
+  	network_4 = tflearn.activation(network_4, 'relu')
+	network = merge([network_1, network_2_1, network_2_2, network_3_1, network_3_2, network_4], axis=3, mode='concat')
+	del network_1, network_2, network_3, network_4
+	
+	# Inception Branch Module 2
+	network_1 = conv_2d(network, 320, 1)
+	network_1 = batch_normalization(network_1)
+  	network_1 = tflearn.activation(network_1, 'relu')
+
+	network_2 = conv_2d(network, 384, 1)
+	network_2 = batch_normalization(network_2)
+  	network_2 = tflearn.activation(network_2, 'relu')
+	network_2_1 = conv_2d(network_2, 384, [1,3])
+	network_2_1 = batch_normalization(network_2_1)
+  	network_2_1 = tflearn.activation(network_2_1, 'relu')
+	network_2_2 = conv_2d(network_2, 384, [3,1])
+	network_2_2 = batch_normalization(network_2_2)
+  	network_2_2 = tflearn.activation(network_2_2, 'relu')
+
+	network_3 = conv_2d(network, 448, 1)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3 = conv_2d(network, 384, 3)
+	network_3 = batch_normalization(network_3)
+  	network_3 = tflearn.activation(network_3, 'relu')
+	network_3_1 = conv_2d(network_3, 384, [1,3])
+	network_3_1 = batch_normalization(network_3_1)
+  	network_3_1 = tflearn.activation(network_3_1, 'relu')
+	network_3_2 = conv_2d(network_3, 384, [3,1])
+	network_3_2 = batch_normalization(network_3_2)
+  	network_3_2 = tflearn.activation(network_3_2, 'relu')
+
+	network_4 = avg_pool_2d(network, kernel_size=3, strides=1)
+	network_4 = conv_2d(network_4, 192, 1)
+	network_4 = batch_normalization(network_4)
+  	network_4 = tflearn.activation(network_4, 'relu')
+	network = merge([network_1, network_2_1, network_2_2, network_3_1, network_3_2, network_4], axis=3, mode='concat')
+	del network_1, network_2, network_3, network_4
+
+	# Average Pool 
+	network = avg_pool_2d(network, kernel_size=8, strides=1)
+
+	# Flatten 
+	network = flatten(network)
+
+	# Fully Connected Layer
+	network = fully_connected(network, 2048, activation='elu')
+
+	# Loss Layer 
+	loss_layer = fully_connected(network, num_output_classes, regularizer=cnn_regularization_type, weight_decay=cnn_regularization_weight_decay, activation=cnn_loss_layer_activation)
+
+	# Return net
+	return loss_layer
+
+
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # Function For VGG 11 
 def load_vgg_11(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation):
 	input_layer = input_data(shape=[None, cnn_image_shape[0], cnn_image_shape[1], cnn_image_shape[2]], data_preprocessing = cnn_img_prep, data_augmentation = cnn_img_aug)
@@ -613,7 +1011,7 @@ def load_densenet(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probabili
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
-# Function for Highway Convolutional Networks
+# Function for Convolutional Highway Networks
 def load_highway(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation, block_depth): 
 
 	network = input_data(shape=[None, cnn_image_shape[0], cnn_image_shape[1], cnn_image_shape[2]], data_preprocessing = cnn_img_prep, data_augmentation = cnn_img_aug)
@@ -636,7 +1034,125 @@ def load_highway(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probabilit
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
+# Functions for Inception Resnet V4
+def repeat(inputs, repetitions, layer, *args, **kwargs):
+    outputs = inputs
+    for i in range(repetitions):
+        outputs = layer(outputs, *args, **kwargs)
+    return outputs
 
+def block35(net, scale=1.0, activation="relu"):
+    tower_conv = relu(batch_normalization(conv_2d(net, 32, 1, bias=False, activation='relu', name='Conv2d_1x1')))
+    tower_conv1_0 = relu(batch_normalization(conv_2d(net, 32, 1, bias=False, activation='relu',name='Conv2d_0a_1x1')))
+    tower_conv1_1 = relu(batch_normalization(conv_2d(tower_conv1_0, 32, 3, bias=False, activation='relu',name='Conv2d_0b_3x3')))
+    tower_conv2_0 = relu(batch_normalization(conv_2d(net, 32, 1, bias=False, activation='relu', name='Conv2d_0a_1x1')))
+    tower_conv2_1 = relu(batch_normalization(conv_2d(tower_conv2_0, 48,3, bias=False, activation='relu', name='Conv2d_0b_3x3')))
+    tower_conv2_2 = relu(batch_normalization(conv_2d(tower_conv2_1, 64,3, bias=False, activation='relu', name='Conv2d_0c_3x3')))
+    tower_mixed = merge([tower_conv, tower_conv1_1, tower_conv2_2], mode='concat', axis=3)
+    tower_out = relu(batch_normalization(conv_2d(tower_mixed, net.get_shape()[3], 1, bias=False, activation='relu', name='Conv2d_1x1')))
+    net += scale * tower_out
+    if activation:
+        if isinstance(activation, str):
+            net = activations.get(activation)(net)
+        elif hasattr(activation, '__call__'):
+            net = activation(net)
+        else:
+            raise ValueError("Invalid Activation.")
+    return net
+
+def block17(net, scale=1.0, activation="relu"):
+    tower_conv = relu(batch_normalization(conv_2d(net, 192, 1, bias=False, activation='relu', name='Conv2d_1x1')))
+    tower_conv_1_0 = relu(batch_normalization(conv_2d(net, 128, 1, bias=False, activation='relu', name='Conv2d_0a_1x1')))
+    tower_conv_1_1 = relu(batch_normalization(conv_2d(tower_conv_1_0, 160,[1,7], bias=False, activation='relu',name='Conv2d_0b_1x7')))
+    tower_conv_1_2 = relu(batch_normalization(conv_2d(tower_conv_1_1, 192, [7,1], bias=False, activation='relu',name='Conv2d_0c_7x1')))
+    tower_mixed = merge([tower_conv,tower_conv_1_2], mode='concat', axis=3)
+    tower_out = relu(batch_normalization(conv_2d(tower_mixed, net.get_shape()[3], 1, bias=False, activation='relu', name='Conv2d_1x1')))
+    net += scale * tower_out
+    if activation:
+        if isinstance(activation, str):
+            net = activations.get(activation)(net)
+        elif hasattr(activation, '__call__'):
+            net = activation(net)
+        else:
+            raise ValueError("Invalid Activation.")
+    return net
+
+
+def block8(net, scale=1.0, activation="relu"):
+    tower_conv = relu(batch_normalization(conv_2d(net, 192, 1, bias=False, activation='relu', name='Conv2d_1x1')))
+    tower_conv1_0 = relu(batch_normalization(conv_2d(net, 192, 1, bias=False, activation='relu', name='Conv2d_0a_1x1')))
+    tower_conv1_1 = relu(batch_normalization(conv_2d(tower_conv1_0, 224, [1,3], bias=False, activation='relu', name='Conv2d_0b_1x3')))
+    tower_conv1_2 = relu(batch_normalization(conv_2d(tower_conv1_1, 256, [3,1], bias=False, name='Conv2d_0c_3x1')))
+    tower_mixed = merge([tower_conv,tower_conv1_2], mode='concat', axis=3)
+    tower_out = relu(batch_normalization(conv_2d(tower_mixed, net.get_shape()[3], 1, bias=False, activation='relu', name='Conv2d_1x1')))
+    net += scale * tower_out
+    if activation:
+        if isinstance(activation, str):
+            net = activations.get(activation)(net)
+        elif hasattr(activation, '__call__'):
+            net = activation(net)
+        else:
+            raise ValueError("Invalid Activation.")
+    return net 
+
+# ---------- Main Function -------------
+def load_inception_resnet_v4(cnn_image_shape, cnn_img_prep, cnn_img_aug, cnn_keep_probability, num_output_classes, cnn_regularization_type, cnn_regularization_weight_decay, cnn_loss_layer_activation): 
+
+	network = input_data(shape=[None, cnn_image_shape[0], cnn_image_shape[1], cnn_image_shape[2]], data_preprocessing = cnn_img_prep, data_augmentation = cnn_img_aug)
+	conv1a_3_3 = relu(batch_normalization(conv_2d(network, 32, 3, strides=2, bias=False, padding='VALID',activation='relu',name='Conv2d_1a_3x3')))
+	conv2a_3_3 = relu(batch_normalization(conv_2d(conv1a_3_3, 32, 3, bias=False, padding='VALID',activation='relu', name='Conv2d_2a_3x3')))
+	conv2b_3_3 = relu(batch_normalization(conv_2d(conv2a_3_3, 64, 3, bias=False, activation='relu', name='Conv2d_2b_3x3')))
+	maxpool3a_3_3 = max_pool_2d(conv2b_3_3, 3, strides=2, padding='VALID', name='MaxPool_3a_3x3')
+	conv3b_1_1 = relu(batch_normalization(conv_2d(maxpool3a_3_3, 80, 1, bias=False, padding='VALID',activation='relu', name='Conv2d_3b_1x1')))
+	conv4a_3_3 = relu(batch_normalization(conv_2d(conv3b_1_1, 192, 3, bias=False, padding='VALID',activation='relu', name='Conv2d_4a_3x3')))
+	maxpool5a_3_3 = max_pool_2d(conv4a_3_3, 3, strides=2, padding='VALID', name='MaxPool_5a_3x3')
+
+	tower_conv = relu(batch_normalization(conv_2d(maxpool5a_3_3, 96, 1, bias=False, activation='relu', name='Conv2d_5b_b0_1x1')))
+	tower_conv1_0 = relu(batch_normalization(conv_2d(maxpool5a_3_3, 48, 1, bias=False, activation='relu', name='Conv2d_5b_b1_0a_1x1')))
+	tower_conv1_1 = relu(batch_normalization(conv_2d(tower_conv1_0, 64, 5, bias=False, activation='relu', name='Conv2d_5b_b1_0b_5x5')))
+	tower_conv2_0 = relu(batch_normalization(conv_2d(maxpool5a_3_3, 64, 1, bias=False, activation='relu', name='Conv2d_5b_b2_0a_1x1')))
+	tower_conv2_1 = relu(batch_normalization(conv_2d(tower_conv2_0, 96, 3, bias=False, activation='relu', name='Conv2d_5b_b2_0b_3x3')))
+	tower_conv2_2 = relu(batch_normalization(conv_2d(tower_conv2_1, 96, 3, bias=False, activation='relu',name='Conv2d_5b_b2_0c_3x3')))
+	tower_pool3_0 = avg_pool_2d(maxpool5a_3_3, 3, strides=1, padding='same', name='AvgPool_5b_b3_0a_3x3')
+	tower_conv3_1 = relu(batch_normalization(conv_2d(tower_pool3_0, 64, 1, bias=False, activation='relu',name='Conv2d_5b_b3_0b_1x1')))
+	tower_5b_out = merge([tower_conv, tower_conv1_1, tower_conv2_2, tower_conv3_1], mode='concat', axis=3)
+	network = repeat(tower_5b_out, 10, block35, scale=0.17)
+
+	tower_conv = relu(batch_normalization(conv_2d(network, 384, 3, bias=False, strides=2,activation='relu', padding='VALID', name='Conv2d_6a_b0_0a_3x3')))
+	tower_conv1_0 = relu(batch_normalization(conv_2d(network, 256, 1, bias=False, activation='relu', name='Conv2d_6a_b1_0a_1x1')))
+	tower_conv1_1 = relu(batch_normalization(conv_2d(tower_conv1_0, 256, 3, bias=False, activation='relu', name='Conv2d_6a_b1_0b_3x3')))
+	tower_conv1_2 = relu(batch_normalization(conv_2d(tower_conv1_1, 384, 3, bias=False, strides=2, padding='VALID', activation='relu',name='Conv2d_6a_b1_0c_3x3')))
+	tower_pool = max_pool_2d(network, 3, strides=2, padding='VALID',name='MaxPool_1a_3x3')
+	network = merge([tower_conv, tower_conv1_2, tower_pool], mode='concat', axis=3)
+	network = repeat(network, 20, block17, scale=0.1)
+
+	tower_conv = relu(batch_normalization(conv_2d(network, 256, 1, bias=False, activation='relu', name='Conv2d_0a_1x1')))
+	tower_conv0_1 = relu(batch_normalization(conv_2d(tower_conv, 384, 3, bias=False, strides=2, padding='VALID', activation='relu',name='Conv2d_0a_1x1')))
+
+	tower_conv1 = relu(batch_normalization(conv_2d(network, 256, 1, bias=False, padding='VALID', activation='relu',name='Conv2d_0a_1x1')))
+	tower_conv1_1 = relu(batch_normalization(conv_2d(tower_conv1,288,3, bias=False, strides=2, padding='VALID',activation='relu', name='COnv2d_1a_3x3')))
+
+	tower_conv2 = relu(batch_normalization(conv_2d(network, 256,1, bias=False, activation='relu',name='Conv2d_0a_1x1')))
+	tower_conv2_1 = relu(batch_normalization(conv_2d(tower_conv2, 288,3, bias=False, name='Conv2d_0b_3x3',activation='relu')))
+	tower_conv2_2 = relu(batch_normalization(conv_2d(tower_conv2_1, 320, 3, bias=False, strides=2, padding='VALID',activation='relu', name='Conv2d_1a_3x3')))
+
+	tower_pool = max_pool_2d(network, 3, strides=2, padding='VALID', name='MaxPool_1a_3x3')
+	network = merge([tower_conv0_1, tower_conv1_1,tower_conv2_2, tower_pool], mode='concat', axis=3)
+
+	network = repeat(network, 9, block8, scale=0.2)
+	network = block8(network, activation='relu')
+
+	network = relu(batch_normalization(conv_2d(network, 1536, 1, bias=False, activation='relu', name='Conv2d_7b_1x1')))
+	network = avg_pool_2d(network, network.get_shape().as_list()[1:3],strides=2, padding='VALID', name='AvgPool_1a_8x8')
+	network = flatten(network)
+	network = dropout(network, cnn_keep_probability)
+	
+
+	# Loss Layer 
+	loss_layer = fully_connected(network, num_output_classes, regularizer=cnn_regularization_type, weight_decay=cnn_regularization_weight_decay, activation=cnn_loss_layer_activation)
+
+	# Return net
+	return loss_layer
 
 
 
